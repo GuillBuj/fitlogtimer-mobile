@@ -1,0 +1,22 @@
+{
+  "exercises": [
+    {
+      "id": 2,
+      "name": "Bench Press",
+      "shortName": "DC",
+      "position": 1
+    },
+    {
+      "id": 10,
+      "name": "Deadlift",
+      "shortName": "DL",
+      "position": 2
+    },
+    {
+      "id": 15,
+      "name": "Squat",
+      "shortName": "SQ",
+      "position": 3
+    }
+  ]
+}
