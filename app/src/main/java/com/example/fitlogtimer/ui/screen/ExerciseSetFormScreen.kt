@@ -1,5 +1,6 @@
 package com.example.fitlogtimer.ui.screen
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -27,6 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitlogtimer.data.manager.JsonDataManager
@@ -35,7 +41,9 @@ import com.example.fitlogtimer.data.repository.DataRepository
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModelFactory
+import java.util.Locale
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ExerciseSetFormScreen() {
     val context = LocalContext.current
@@ -96,21 +104,66 @@ fun ExerciseSetFormScreen() {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                OutlinedTextField(
-                    value = uiState.reps,
-                    onValueChange = viewModel::updateReps,
-                    label = { Text("Reps") },
+                // --- Reps ---
+                Row(
                     modifier = Modifier.weight(1f),
-                    isError = uiState.reps.isNotBlank() && uiState.reps.toIntOrNull() == null
-                )
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = {
+                        val current = uiState.reps.toIntOrNull() ?: 0
+                        viewModel.updateReps((current - 1).coerceAtLeast(0).toString())
+                    }) {
+                        Icon(Icons.Default.Remove, contentDescription = "Diminuer reps")
 
-                OutlinedTextField(
-                    value = uiState.weight,
-                    onValueChange = viewModel::updateWeight,
-                    label = { Text("Poids (kg)") },
+                    }
+
+                    OutlinedTextField(
+                        value = uiState.reps,
+                        onValueChange = viewModel::updateReps,
+                        label = { Text("Reps") },
+                        modifier = Modifier.weight(1f),
+                        isError = uiState.reps.isNotBlank() && uiState.reps.toIntOrNull() == null,
+                        singleLine = true
+                    )
+
+                    IconButton(onClick = {
+                        val current = uiState.reps.toIntOrNull() ?: 0
+                        viewModel.updateReps((current + 1).toString())
+                    }) {
+                        Icon(Icons.Default.Add, contentDescription = "Augmenter reps")
+                    }
+                }
+
+                // --- Poids ---
+                Row(
                     modifier = Modifier.weight(1f),
-                    isError = uiState.weight.isNotBlank() && uiState.weight.toDoubleOrNull() == null
-                )
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = {
+                        val current = uiState.weight.toDoubleOrNull() ?: 0.0
+                        val newValue = (current - 0.5).coerceAtLeast(0.0)
+                        viewModel.updateWeight("%.1f".format(Locale.US, newValue))//Locale.US pour eviter erreur
+                    }) {
+                        Icon(Icons.Default.Remove, contentDescription = "Diminuer poids")
+                    }
+
+                    OutlinedTextField(
+                        value = uiState.weight,
+                        onValueChange = viewModel::updateWeight,
+                        label = { Text("Poids (kg)") },
+                        modifier = Modifier.weight(1f),
+                        isError = uiState.weight.isNotBlank() && uiState.weight.toDoubleOrNull() == null,
+                        singleLine = true
+                    )
+
+                    IconButton(onClick = {
+                        val current = uiState.weight.toDoubleOrNull() ?: 0.0
+                        val newValue = (current + 0.5).coerceAtLeast(0.0)
+                        viewModel.updateWeight("%.1f".format(Locale.US, newValue))
+                    }) {
+                        Icon(Icons.Default.Add, contentDescription = "Augmenter poids")
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))

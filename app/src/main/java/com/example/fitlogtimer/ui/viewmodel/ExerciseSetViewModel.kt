@@ -70,8 +70,8 @@ class ExerciseSetViewModel(private val repository: DataRepository) : ViewModel()
         _uiState.value = _uiState.value.copy(reps = reps)
     }
 
-    fun updateWeight(weight: String) {
-        _uiState.value = _uiState.value.copy(weight = weight)
+    fun updateWeight(newWeight: String) {
+        _uiState.value = _uiState.value.copy(weight = newWeight)
     }
 
     fun addExerciseSet() {
