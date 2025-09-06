@@ -76,18 +76,23 @@ class ExerciseSetViewModel(private val repository: DataRepository) : ViewModel()
 
     fun addExerciseSet() {
         val currentState = _uiState.value
-        if (currentState.isFormValid) {
-            val exerciseSet = ExerciseSet(
-                exerciseId = currentState.selectedExerciseId,
-                reps = currentState.reps.toInt(),
-                weight = currentState.weight.toDouble()
+        val selectedExercise = currentState.exercises.find { it.id == currentState.selectedExerciseId }
+
+        if (selectedExercise != null) {
+            val newSet = ExerciseSet(
+                exerciseId = selectedExercise.id,
+                reps = currentState.reps.toIntOrNull() ?: selectedExercise.defaultReps,
+                weight = currentState.weight.toDoubleOrNull() ?: selectedExercise.defaultWeight
             )
 
+            val updatedSets = currentState.exerciseSets + newSet
+
+            //recopie le dernier set pour mettre en valeur par defaut
             _uiState.value = currentState.copy(
-                exerciseSets = currentState.exerciseSets + exerciseSet,
-                reps = "",
-                weight = "",
-                selectedExerciseId = -1
+                exerciseSets = updatedSets,
+                selectedExerciseId = selectedExercise.id,
+                reps = newSet.reps.toString(),
+                weight = newSet.weight.toString()
             )
         }
     }
