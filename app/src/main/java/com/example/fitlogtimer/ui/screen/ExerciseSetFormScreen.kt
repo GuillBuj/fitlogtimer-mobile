@@ -39,6 +39,7 @@ import com.example.fitlogtimer.data.manager.JsonDataManager
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.repository.DataRepository
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
+import com.example.fitlogtimer.ui.component.ExportJsonButton
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModelFactory
 import java.io.File
@@ -218,26 +219,11 @@ fun ExerciseSetFormScreen() {
                         Text("Effacer tout")
                     }
 
-                    Button(
-                        onClick = {
-                            Log.d("Export", "Bouton Export cliqué")
-
-                            Log.d("Export", "ExSets size: ${uiState.exerciseSets.size}")
-
-                            val fileName = "workout_export.json"
-                            val file = File(context.cacheDir, fileName)
-
-                            val json = viewModel.exportToJson()
-                            Log.d("Export", "JSON généré: $json")
-
-                            file.writeText(json)
-
-                            Log.d("Export", "Fichier exporté : $fileName")
-                        },
+                    ExportJsonButton(
+                        viewModel = viewModel,
+                        context = LocalContext.current,
                         modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Exporter JSON")
-                    }
+                    )
                 }
             } else {
                 Text(

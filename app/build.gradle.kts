@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.compose.runtime)
 
     // Testing
     testImplementation(libs.junit)
