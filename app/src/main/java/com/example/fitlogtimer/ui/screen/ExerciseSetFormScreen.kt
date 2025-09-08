@@ -41,6 +41,7 @@ import com.example.fitlogtimer.data.repository.DataRepository
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModelFactory
+import java.io.File
 import java.util.Locale
 
 @SuppressLint("DefaultLocale")
@@ -219,8 +220,19 @@ fun ExerciseSetFormScreen() {
 
                     Button(
                         onClick = {
+                            Log.d("Export", "Bouton Export cliqué")
+
+                            Log.d("Export", "ExSets size: ${uiState.exerciseSets.size}")
+
+                            val fileName = "workout_export.json"
+                            val file = File(context.cacheDir, fileName)
+
                             val json = viewModel.exportToJson()
-                            // TODO: Exporter le JSON
+                            Log.d("Export", "JSON généré: $json")
+
+                            file.writeText(json)
+
+                            Log.d("Export", "Fichier exporté : $fileName")
                         },
                         modifier = Modifier.weight(1f)
                     ) {

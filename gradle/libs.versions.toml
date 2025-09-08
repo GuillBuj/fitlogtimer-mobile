@@ -14,12 +14,14 @@ lifecycleViewModelKtx = "2.6.1"
 coroutines = "1.7.3"
 foundationLayout = "1.9.0"
 composeMaterialIcons = "1.6.0"
+serialization = "1.7.1"
 
 [libraries]
 # Core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -48,3 +50,4 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.model.ExerciseSet
+import com.example.fitlogtimer.data.model.WorkoutExport
 import com.example.fitlogtimer.data.repository.DataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 data class ExerciseSetFormState(
     val selectedExerciseId: Int = -1,
@@ -102,7 +105,11 @@ class ExerciseSetViewModel(private val repository: DataRepository) : ViewModel()
     }
 
     fun exportToJson(): String {
-        return repository.exportExerciseSets(_uiState.value.exerciseSets)
+        val exportData = WorkoutExport(
+            date = System.currentTimeMillis(),
+            exerciseSets = uiState.value.exerciseSets
+        )
+        return Json.encodeToString(exportData)
     }
 
     fun clearError() {
