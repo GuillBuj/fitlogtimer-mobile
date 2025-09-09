@@ -1,22 +1,35 @@
 package com.example.fitlogtimer.data.manager
 
 import android.content.Context
+import com.example.fitlogtimer.data.model.AppInputs
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.model.ExerciseList
 import com.example.fitlogtimer.data.model.ExerciseSet
 import com.example.fitlogtimer.data.model.WorkoutExport
+import com.example.fitlogtimer.data.model.WorkoutType
+import com.example.fitlogtimer.data.model.WorkoutTypeList
 import com.google.gson.Gson
 import java.io.BufferedReader
-import java.time.LocalDate
 
 class JsonDataManager(private val context: Context) {
 
-    fun loadFromJson(): List<Exercise> {
+    // Charge TOUTES les données d'un coup
+    private fun loadAppInputs(): AppInputs {
         val jsonString = context.assets.open("exercises.json")
             .bufferedReader().use(BufferedReader::readText)
+        return Gson().fromJson(jsonString, AppInputs::class.java)
+    }
 
-        val exerciseList = Gson().fromJson(jsonString, ExerciseList::class.java)
-        return exerciseList.exercises.sortedBy { it.position }
+    // Charge seulement les exercices
+    fun loadExercisesFromJson(): List<Exercise> {
+        val AppInputs = loadAppInputs()
+        return AppInputs.exercises.sortedBy { it.position }
+    }
+
+    // Charge seulement les types d'entraînement
+    fun loadWorkoutTypesFromJson(): List<WorkoutType> {
+        val AppInputs = loadAppInputs()
+        return AppInputs.workoutTypes
     }
 
     fun exportToJson(exerciseSets: List<ExerciseSet>, date: String, bodyWeight: Double? = null): String {

@@ -1,6 +1,7 @@
 package com.example.fitlogtimer.ui.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,6 +11,7 @@ import com.example.fitlogtimer.data.manager.JsonDataManager
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.model.ExerciseSet
 import com.example.fitlogtimer.data.model.WorkoutExport
+import com.example.fitlogtimer.data.model.WorkoutType
 import com.example.fitlogtimer.data.repository.DataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,8 +50,16 @@ class ExerciseSetViewModel(private val repository: DataRepository,
     var showBodyWeightDialog by mutableStateOf(false)
         private set
 
+    var selectedWorkoutType by mutableStateOf<String?>(null)
+        private set
+
+    var workoutTypes by mutableStateOf<List<WorkoutType>>(emptyList())
+        private set
+
+
     init {
         loadExercises()
+        loadWorkoutTypes()
     }
 
     private fun loadExercises() {
@@ -112,6 +122,21 @@ class ExerciseSetViewModel(private val repository: DataRepository,
                 weight = newSet.weight.toString()
             )
         }
+    }
+
+    private fun loadWorkoutTypes() {
+        viewModelScope.launch {
+            try {
+                val types = repository.getWorkoutTypes()
+                workoutTypes = types
+            } catch (e: Exception) {
+                Log.e("ViewModel", "Erreur lors du chargement", e)
+            }
+        }
+    }
+
+    fun updateWorkoutType(type: String?) {
+        selectedWorkoutType = type
     }
 
     fun clearWorkout() {

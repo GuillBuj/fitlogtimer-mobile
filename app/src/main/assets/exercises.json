@@ -22,5 +22,9 @@
       "shortName": "SQ",
       "position": 3
     }
+  ],
+  "workoutTypes": [
+    {"name": "Power"},
+    {"name": "Light"}
   ]
 }
