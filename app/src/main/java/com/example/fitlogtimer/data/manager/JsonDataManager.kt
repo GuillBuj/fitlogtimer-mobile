@@ -32,10 +32,11 @@ class JsonDataManager(private val context: Context) {
         return AppInputs.workoutTypes
     }
 
-    fun exportToJson(exerciseSets: List<ExerciseSet>, date: String, bodyWeight: Double? = null): String {
+    fun exportToJson(exerciseSets: List<ExerciseSet>, date: String, bodyWeight: Double? = null, workoutType: String? = null): String {
         val workoutExport = WorkoutExport(
             exerciseSets = exerciseSets,
             bodyWeight = bodyWeight,
+            workoutType = workoutType,
             date = date)
         return Gson().toJson(workoutExport)
     }

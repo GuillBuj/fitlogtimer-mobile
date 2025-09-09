@@ -155,6 +155,7 @@ class ExerciseSetViewModel(private val repository: DataRepository,
         return jsonDataManager.exportToJson(
             exerciseSets = _uiState.value.exerciseSets,
             date = LocalDate.now().toString(),
+            workoutType = selectedWorkoutType,
             bodyWeight = bodyWeight.toDoubleOrNull() // Double? accepté
         )
     }
