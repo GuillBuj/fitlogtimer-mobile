@@ -9,8 +9,3 @@ data class ExerciseSet(
     val weight: Double
 )
 
-@Serializable
-data class WorkoutExport(
-    val date: Long = System.currentTimeMillis(),
-    val exerciseSets: List<ExerciseSet> = emptyList()
-)

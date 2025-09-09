@@ -38,6 +38,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitlogtimer.data.manager.JsonDataManager
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.repository.DataRepository
+import com.example.fitlogtimer.ui.component.BodyWeightIndicator
+import com.example.fitlogtimer.ui.component.BodyWeightInput
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
 import com.example.fitlogtimer.ui.component.ExportJsonButton
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
@@ -55,7 +57,6 @@ fun ExerciseSetFormScreen() {
     val viewModel: ExerciseSetViewModel = viewModel(
         factory = ExerciseSetViewModelFactory(repository)
     )
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.selectedExerciseId) {
@@ -68,12 +69,23 @@ fun ExerciseSetFormScreen() {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(
-            "Ajouter des séries",
-            style = MaterialTheme.typography.headlineMedium
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                "Ajouter des séries",
+                style = MaterialTheme.typography.headlineMedium
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            BodyWeightInput(viewModel = viewModel)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Indicateur de poids
+        BodyWeightIndicator(bodyWeight = viewModel.bodyWeight)
 
         if (uiState.isLoading) {
             Column(

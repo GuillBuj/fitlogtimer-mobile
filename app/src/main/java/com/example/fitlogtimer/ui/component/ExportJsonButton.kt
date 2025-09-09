@@ -28,7 +28,7 @@ fun ExportJsonButton(
             val fileName = "workout_export_$formatted.json"
 
             val file = File(context.cacheDir, fileName)
-            val json = viewModel.exportToJson()
+            val json = viewModel.exportWorkoutToJson()
             file.writeText(json)
 
             val fileUri = FileProvider.getUriForFile(

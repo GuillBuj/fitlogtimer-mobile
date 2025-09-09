@@ -1,5 +1,9 @@
 package com.example.fitlogtimer.ui.viewmodel
 
+import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitlogtimer.data.model.Exercise
@@ -33,6 +37,12 @@ data class ExerciseSetFormState(
 class ExerciseSetViewModel(private val repository: DataRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(ExerciseSetFormState())
     val uiState: StateFlow<ExerciseSetFormState> = _uiState.asStateFlow()
+
+    var bodyWeight by mutableStateOf("")
+        private set
+
+    var showBodyWeightDialog by mutableStateOf(false)
+        private set
 
     init {
         loadExercises()
@@ -104,12 +114,23 @@ class ExerciseSetViewModel(private val repository: DataRepository) : ViewModel()
         _uiState.value = _uiState.value.copy(exerciseSets = emptyList())
     }
 
-    fun exportToJson(): String {
-        val exportData = WorkoutExport(
-            date = System.currentTimeMillis(),
-            exerciseSets = uiState.value.exerciseSets
+    fun updateBodyWeight(value: String) {
+        bodyWeight = value
+    }
+
+    fun toggleBodyWeightDialog() {
+        showBodyWeightDialog = !showBodyWeightDialog
+    }
+
+    fun exportWorkoutToJson(): String {
+        val bodyWeightValue = bodyWeight.toDoubleOrNull()
+
+        val workoutExport = WorkoutExport(
+            bodyWeight = bodyWeightValue,
+            exerciseSets = _uiState.value.exerciseSets
         )
-        return Json.encodeToString(exportData)
+
+        return Json.encodeToString(workoutExport)
     }
 
     fun clearError() {
