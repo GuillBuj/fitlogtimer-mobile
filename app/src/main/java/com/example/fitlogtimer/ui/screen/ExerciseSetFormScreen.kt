@@ -36,9 +36,7 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitlogtimer.data.manager.JsonDataManager
-import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.repository.DataRepository
-import com.example.fitlogtimer.ui.component.BodyWeightIndicator
 import com.example.fitlogtimer.ui.component.BodyWeightInput
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
 import com.example.fitlogtimer.ui.component.ExportJsonButton
@@ -83,9 +81,6 @@ fun ExerciseSetFormScreen() {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Indicateur de poids
-        BodyWeightIndicator(bodyWeight = viewModel.bodyWeight)
 
         if (uiState.isLoading) {
             Column(

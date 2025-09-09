@@ -7,6 +7,7 @@ import com.example.fitlogtimer.data.model.ExerciseSet
 import com.example.fitlogtimer.data.model.WorkoutExport
 import com.google.gson.Gson
 import java.io.BufferedReader
+import java.time.LocalDate
 
 class JsonDataManager(private val context: Context) {
 
@@ -18,8 +19,8 @@ class JsonDataManager(private val context: Context) {
         return exerciseList.exercises.sortedBy { it.position }
     }
 
-    fun exportToJson(exerciseSets: List<ExerciseSet>): String {
-        val workoutExport = WorkoutExport(exerciseSets = exerciseSets)
+    fun exportToJson(exerciseSets: List<ExerciseSet>, date: String): String {
+        val workoutExport = WorkoutExport(exerciseSets = exerciseSets, date = date)
         return Gson().toJson(workoutExport)
     }
 }

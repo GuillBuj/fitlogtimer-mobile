@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.time.LocalDate
 
 data class ExerciseSetFormState(
     val selectedExerciseId: Int = -1,
@@ -126,6 +127,7 @@ class ExerciseSetViewModel(private val repository: DataRepository) : ViewModel()
         val bodyWeightValue = bodyWeight.toDoubleOrNull()
 
         val workoutExport = WorkoutExport(
+            date = LocalDate.now().toString(),
             bodyWeight = bodyWeightValue,
             exerciseSets = _uiState.value.exerciseSets
         )
