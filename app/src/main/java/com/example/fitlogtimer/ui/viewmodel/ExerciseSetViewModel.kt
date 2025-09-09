@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitlogtimer.data.manager.JsonDataManager
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.model.ExerciseSet
 import com.example.fitlogtimer.data.model.WorkoutExport
@@ -35,7 +36,9 @@ data class ExerciseSetFormState(
                 weight.isNotBlank() && weight.toDoubleOrNull() != null
 }
 
-class ExerciseSetViewModel(private val repository: DataRepository) : ViewModel() {
+class ExerciseSetViewModel(private val repository: DataRepository,
+                           private val jsonDataManager: JsonDataManager
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ExerciseSetFormState())
     val uiState: StateFlow<ExerciseSetFormState> = _uiState.asStateFlow()
 
@@ -124,15 +127,11 @@ class ExerciseSetViewModel(private val repository: DataRepository) : ViewModel()
     }
 
     fun exportWorkoutToJson(): String {
-        val bodyWeightValue = bodyWeight.toDoubleOrNull()
-
-        val workoutExport = WorkoutExport(
+        return jsonDataManager.exportToJson(
+            exerciseSets = _uiState.value.exerciseSets,
             date = LocalDate.now().toString(),
-            bodyWeight = bodyWeightValue,
-            exerciseSets = _uiState.value.exerciseSets
+            bodyWeight = bodyWeight.toDoubleOrNull() // Double? accepté
         )
-
-        return Json.encodeToString(workoutExport)
     }
 
     fun clearError() {

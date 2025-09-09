@@ -19,8 +19,11 @@ class JsonDataManager(private val context: Context) {
         return exerciseList.exercises.sortedBy { it.position }
     }
 
-    fun exportToJson(exerciseSets: List<ExerciseSet>, date: String): String {
-        val workoutExport = WorkoutExport(exerciseSets = exerciseSets, date = date)
+    fun exportToJson(exerciseSets: List<ExerciseSet>, date: String, bodyWeight: Double? = null): String {
+        val workoutExport = WorkoutExport(
+            exerciseSets = exerciseSets,
+            bodyWeight = bodyWeight,
+            date = date)
         return Gson().toJson(workoutExport)
     }
 }

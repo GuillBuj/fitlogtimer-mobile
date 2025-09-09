@@ -53,7 +53,7 @@ fun ExerciseSetFormScreen() {
     val repository = remember { DataRepository(jsonDataManager) }
 
     val viewModel: ExerciseSetViewModel = viewModel(
-        factory = ExerciseSetViewModelFactory(repository)
+        factory = ExerciseSetViewModelFactory(repository, jsonDataManager)
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
