@@ -18,9 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,10 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,14 +36,15 @@ import com.example.fitlogtimer.data.manager.JsonDataManager
 import com.example.fitlogtimer.data.repository.DataRepository
 import com.example.fitlogtimer.ui.component.AppTopBar
 import com.example.fitlogtimer.ui.component.BodyWeightInputIcon
+import com.example.fitlogtimer.ui.component.Chrono
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
 import com.example.fitlogtimer.ui.component.ExportJsonButton
 import com.example.fitlogtimer.ui.component.RepsInput
+import com.example.fitlogtimer.ui.component.Timer
 import com.example.fitlogtimer.ui.component.WeightInput
 import com.example.fitlogtimer.ui.component.WorkoutTypeInputIcon
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModelFactory
-import java.util.Locale
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -164,6 +159,9 @@ fun ExerciseSetFormScreen() {
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
+
+                    Chrono()
+                    Timer()
 
                     if (uiState.exerciseSets.isNotEmpty()) {
                         Text(
