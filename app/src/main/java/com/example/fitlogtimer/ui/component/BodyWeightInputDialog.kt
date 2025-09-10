@@ -32,7 +32,18 @@ fun BodyWeightInputDialog(viewModel: ExerciseSetViewModel) {
             Column {
                 OutlinedTextField(
                     value = tempWeight,
-                    onValueChange = { tempWeight = it },
+                    onValueChange = { newValue ->
+                        // Filtre les caractères non numériques et remplacer les virgules par des points
+                        val filteredValue = newValue.filter { it.isDigit() || it == '.' || it == ',' }
+                            .replace(',', '.')
+                        // Garde seulement un point décimal
+                        val parts = filteredValue.split('.')
+                        tempWeight = if (parts.size > 2) {
+                            parts[0] + "." + parts.drop(1).joinToString("")
+                        } else {
+                            filteredValue
+                        }
+                    },
                     label = { Text("Poids (kg)") },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number
