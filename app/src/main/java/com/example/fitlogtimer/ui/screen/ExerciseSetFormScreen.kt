@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -33,10 +34,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitlogtimer.data.manager.JsonDataManager
 import com.example.fitlogtimer.data.repository.DataRepository
+import com.example.fitlogtimer.ui.component.AppTopBar
 import com.example.fitlogtimer.ui.component.BodyWeightInputIcon
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
 import com.example.fitlogtimer.ui.component.ExportJsonButton
@@ -63,140 +67,158 @@ fun ExerciseSetFormScreen() {
         Log.d("ExerciseSetFormScreen", "UI state changed: selectedExerciseId = ${uiState.selectedExerciseId}")
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                "Ajouter des séries",
-                style = MaterialTheme.typography.headlineMedium
+    Scaffold(
+        topBar = {
+            AppTopBar(
+                modifier = Modifier.statusBarsPadding()
             )
-
-            WorkoutTypeInputIcon(
-                viewModel = viewModel
-            )
-
-
-            BodyWeightInputIcon(viewModel = viewModel)
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (uiState.isLoading) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Chargement des exercices...")
-            }
-        } else if (uiState.exercises.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("Aucun exercice trouvé dans le fichier JSON")
-            }
-        } else {
+                Text(
+                    "Ajouter des séries",
+                    style = MaterialTheme.typography.headlineMedium
+                )
 
-            ExerciseDropdown(
-                exercises = uiState.exercises,
-                selectedExerciseId = uiState.selectedExerciseId,
-                onExerciseSelected = viewModel::updateSelectedExercise
-            )
+                WorkoutTypeInputIcon(
+                    viewModel = viewModel
+                )
+
+
+                BodyWeightInputIcon(viewModel = viewModel)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                RepsInput(
-                    reps = uiState.reps,
-                    onRepsChange = viewModel::updateReps,
-                    modifier = Modifier.weight(1f)
-                )
-
-                WeightInput(
-                    weight = uiState.weight,
-                    onWeightChange = viewModel::updateWeight,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = viewModel::addExerciseSet,
-                enabled = uiState.isFormValid,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Ajouter l'exercice")
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            if (uiState.exerciseSets.isNotEmpty()) {
-                Text(
-                    "Exercices ajoutés (${uiState.exerciseSets.size})",
-                    style = MaterialTheme.typography.headlineSmall
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    thickness = DividerDefaults.Thickness,
-                    color = DividerDefaults.color
-                )
-
-                uiState.exerciseSets.forEachIndexed { index, exerciseSet ->
-                    val exercise = uiState.exercises.find { it.id == exerciseSet.exerciseId }
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                "#${index + 1} - ${exercise?.name ?: "Exercice ${exerciseSet.exerciseId}"}",
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                            )
-                            Text("${exerciseSet.reps} reps × ${exerciseSet.weight} kg")
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Button(
-                        onClick = viewModel::clearWorkout,
-                        modifier = Modifier.weight(1f)
+            when {
+                uiState.isLoading -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text("Effacer tout")
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Chargement des exercices...")
+                    }
+                }
+
+                uiState.exercises.isEmpty() -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("Aucun exercice trouvé dans le fichier JSON")
+                    }
+                }
+
+                else -> {
+                    ExerciseDropdown(
+                        exercises = uiState.exercises,
+                        selectedExerciseId = uiState.selectedExerciseId,
+                        onExerciseSelected = viewModel::updateSelectedExercise
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        RepsInput(
+                            reps = uiState.reps,
+                            onRepsChange = viewModel::updateReps,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        WeightInput(
+                            weight = uiState.weight,
+                            onWeightChange = viewModel::updateWeight,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
 
-                    ExportJsonButton(
-                        viewModel = viewModel,
-                        context = LocalContext.current,
-                        modifier = Modifier.weight(1f)
-                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = viewModel::addExerciseSet,
+                        enabled = uiState.isFormValid,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Ajouter l'exercice")
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    if (uiState.exerciseSets.isNotEmpty()) {
+                        Text(
+                            "Exercices ajoutés (${uiState.exerciseSets.size})",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            thickness = DividerDefaults.Thickness,
+                            color = DividerDefaults.color
+                        )
+
+                        uiState.exerciseSets.forEachIndexed { index, exerciseSet ->
+                            val exercise = uiState.exercises.find { it.id == exerciseSet.exerciseId }
+                            Card(modifier = Modifier.fillMaxWidth()) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        "#${index + 1} - ${exercise?.name ?: "Exercice ${exerciseSet.exerciseId}"}",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text("${exerciseSet.reps} reps × ${exerciseSet.weight} kg")
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Button(
+                                onClick = viewModel::clearWorkout,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Effacer tout")
+                            }
+
+                            ExportJsonButton(
+                                viewModel = viewModel,
+                                context = context,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    } else {
+                        Text(
+                            "Aucun exercice ajouté. Sélectionnez un exercice pour commencer !",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
                 }
-            } else {
-                Text(
-                    "Aucun exercice ajouté. Sélectionnez un exercice pour commencer !",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
             }
         }
     }
