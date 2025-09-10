@@ -37,10 +37,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitlogtimer.data.manager.JsonDataManager
 import com.example.fitlogtimer.data.repository.DataRepository
-import com.example.fitlogtimer.ui.component.BodyWeightInput
+import com.example.fitlogtimer.ui.component.BodyWeightInputIcon
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
 import com.example.fitlogtimer.ui.component.ExportJsonButton
-import com.example.fitlogtimer.ui.component.WorkoutTypeSelectorButton
+import com.example.fitlogtimer.ui.component.WorkoutTypeInputIcon
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModelFactory
 import java.util.Locale
@@ -77,15 +77,13 @@ fun ExerciseSetFormScreen() {
                 style = MaterialTheme.typography.headlineMedium
             )
 
-            BodyWeightInput(viewModel = viewModel)
+            WorkoutTypeInputIcon(
+                viewModel = viewModel
+            )
+
+
+            BodyWeightInputIcon(viewModel = viewModel)
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        WorkoutTypeSelectorButton(
-            viewModel = viewModel,
-            modifier = Modifier.fillMaxWidth()
-        )
 
         Spacer(modifier = Modifier.height(16.dp))
 

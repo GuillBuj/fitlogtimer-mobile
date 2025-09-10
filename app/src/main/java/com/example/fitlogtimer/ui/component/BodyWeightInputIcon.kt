@@ -2,7 +2,6 @@ package com.example.fitlogtimer.ui.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
@@ -15,7 +14,7 @@ import androidx.compose.ui.Modifier
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
 
 @Composable
-fun BodyWeightInput(
+fun BodyWeightInputIcon(
     viewModel: ExerciseSetViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -47,6 +46,6 @@ fun BodyWeightInput(
 
     // Dialogue pour saisir le poids
     if (showDialog) {
-        BodyWeightDialog(viewModel = viewModel)
+        BodyWeightInputDialog(viewModel = viewModel)
     }
 }

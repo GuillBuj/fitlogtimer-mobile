@@ -53,6 +53,9 @@ class ExerciseSetViewModel(private val repository: DataRepository,
     var selectedWorkoutType by mutableStateOf<String?>(null)
         private set
 
+    var showWorkoutTypeSelector by mutableStateOf(false)
+        private set
+
     var workoutTypes by mutableStateOf<List<WorkoutType>>(emptyList())
         private set
 
@@ -149,6 +152,10 @@ class ExerciseSetViewModel(private val repository: DataRepository,
 
     fun toggleBodyWeightDialog() {
         showBodyWeightDialog = !showBodyWeightDialog
+    }
+
+    fun toggleWorkoutTypeSelector() {
+        showWorkoutTypeSelector = !showWorkoutTypeSelector
     }
 
     fun exportWorkoutToJson(): String {

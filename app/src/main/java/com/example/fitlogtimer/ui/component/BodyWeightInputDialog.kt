@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
 
 @Composable
-fun BodyWeightDialog(viewModel: ExerciseSetViewModel) {
+fun BodyWeightInputDialog(viewModel: ExerciseSetViewModel) {
     var tempWeight by remember { mutableStateOf(viewModel.bodyWeight) }
 
     AlertDialog(
