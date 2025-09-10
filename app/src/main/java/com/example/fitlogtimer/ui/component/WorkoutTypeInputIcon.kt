@@ -39,9 +39,10 @@ fun WorkoutTypeInputIcon(
         // Badge indicateur
         if (selectedWorkoutType != null) {
             Badge(
-                modifier = Modifier.align(Alignment.TopEnd)
+                modifier = Modifier.align(Alignment.TopEnd),
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Text("✓", style = MaterialTheme.typography.labelSmall)
+                Text("✓", style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -51,13 +52,4 @@ fun WorkoutTypeInputIcon(
         WorkoutTypeDropdownDialog(viewModel = viewModel)
     }
 
-    // Affichage du type sélectionné en dessous de l'icône
-    if (selectedWorkoutType != null) {
-        Text(
-            text = "Type: $selectedWorkoutType",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-    }
 }

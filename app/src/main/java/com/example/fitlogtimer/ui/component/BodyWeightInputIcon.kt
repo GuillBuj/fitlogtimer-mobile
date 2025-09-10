@@ -37,7 +37,8 @@ fun BodyWeightInputIcon(
         // Badge indicateur
         if (bodyWeight.isNotEmpty()) {
             Badge(
-                modifier = Modifier.align(Alignment.TopEnd)
+                modifier = Modifier.align(Alignment.TopEnd),
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Text("✓", style = MaterialTheme.typography.labelSmall)
             }
