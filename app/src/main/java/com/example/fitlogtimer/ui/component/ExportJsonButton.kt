@@ -2,6 +2,7 @@ package com.example.fitlogtimer.ui.component
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.Button
@@ -37,13 +38,27 @@ fun ExportJsonButton(
                 file
             )
 
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            // Intent spécifique pour Drive uniquement
+            val driveIntent = Intent(Intent.ACTION_SEND).apply {
+                `package` = "com.google.android.apps.docs"
                 type = "application/json"
                 putExtra(Intent.EXTRA_STREAM, fileUri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                putExtra(Intent.EXTRA_TITLE, fileName)
             }
 
-            context.startActivity(Intent.createChooser(shareIntent, "Exporter vers..."))
+            // Vérifier si l'intent peut être résolu
+            val resolveInfo = context.packageManager.resolveActivity(
+                driveIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            )
+
+            if (resolveInfo != null) {
+                context.startActivity(driveIntent)
+            } else {
+                // si Drive n'est pas installé
+                Toast.makeText(context, "Google Drive n'est pas installé", Toast.LENGTH_LONG).show()
+            }
 
             Toast.makeText(context, "Export JSON généré", Toast.LENGTH_SHORT).show()
             Log.d("Export", "Fichier exporté : $fileName")
