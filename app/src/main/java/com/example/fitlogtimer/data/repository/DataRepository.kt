@@ -1,6 +1,6 @@
 package com.example.fitlogtimer.data.repository
 
-import com.example.fitlogtimer.data.manager.JsonDataManager
+import com.example.fitlogtimer.data.local.JsonDataManager
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.model.WorkoutType
 import kotlinx.coroutines.Dispatchers

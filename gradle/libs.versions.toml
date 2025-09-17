@@ -16,6 +16,9 @@ foundationLayout = "1.9.0"
 composeMaterialIcons = "1.6.0"
 serialization = "1.7.1"
 runtime = "1.9.0"
+googleAuth = "21.0.0"
+googleDriveApi = "v3-rev20220815-2.0.0"
+googleApiClient = "2.2.0"
 
 [libraries]
 # Core
@@ -47,6 +50,11 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "composeMaterialIcons" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+
+# Google
+google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "googleAuth" }
+google-drive-api = { module = "com.google.apis:google-api-services-drive", version.ref = "googleDriveApi" }
+google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClient" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

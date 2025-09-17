@@ -32,8 +32,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.fitlogtimer.data.manager.JsonDataManager
+import com.example.fitlogtimer.data.local.JsonDataManager
 import com.example.fitlogtimer.data.repository.DataRepository
+import com.example.fitlogtimer.data.repository.DriveRepository
 import com.example.fitlogtimer.ui.component.AppTopBar
 import com.example.fitlogtimer.ui.component.BodyWeightInputIcon
 import com.example.fitlogtimer.ui.component.Chrono
@@ -54,8 +55,13 @@ fun ExerciseSetFormScreen() {
     val repository = remember { DataRepository(jsonDataManager) }
 
     val viewModel: ExerciseSetViewModel = viewModel(
-        factory = ExerciseSetViewModelFactory(repository, jsonDataManager)
+        factory = ExerciseSetViewModelFactory(
+            repository = repository,
+            driveRepository = DriveRepository(LocalContext.current), // ou requireContext() si dans Fragment
+            jsonDataManager = jsonDataManager
+        )
     )
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.selectedExerciseId) {

@@ -1,13 +1,11 @@
-package com.example.fitlogtimer.data.manager
+package com.example.fitlogtimer.data.local
 
 import android.content.Context
 import com.example.fitlogtimer.data.model.AppInputs
 import com.example.fitlogtimer.data.model.Exercise
-import com.example.fitlogtimer.data.model.ExerciseList
 import com.example.fitlogtimer.data.model.ExerciseSet
 import com.example.fitlogtimer.data.model.WorkoutExport
 import com.example.fitlogtimer.data.model.WorkoutType
-import com.example.fitlogtimer.data.model.WorkoutTypeList
 import com.google.gson.Gson
 import java.io.BufferedReader
 
@@ -37,7 +35,8 @@ class JsonDataManager(private val context: Context) {
             exerciseSets = exerciseSets,
             bodyWeight = bodyWeight,
             workoutType = workoutType,
-            date = date)
+            date = date
+        )
         return Gson().toJson(workoutExport)
     }
 }

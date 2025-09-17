@@ -7,12 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitlogtimer.data.manager.JsonDataManager
+import com.example.fitlogtimer.data.local.JsonDataManager
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.model.ExerciseSet
 import com.example.fitlogtimer.data.model.WorkoutExport
 import com.example.fitlogtimer.data.model.WorkoutType
 import com.example.fitlogtimer.data.repository.DataRepository
+import com.example.fitlogtimer.data.repository.DriveRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Date
+import java.util.Locale
 
 data class ExerciseSetFormState(
     val selectedExerciseId: Int = -1,
@@ -38,11 +42,23 @@ data class ExerciseSetFormState(
                 weight.isNotBlank() && weight.toDoubleOrNull() != null
 }
 
+// État d'exportation
+sealed class ExportStatus {
+    object Idle : ExportStatus()
+    data class Success(val fileId: String) : ExportStatus()
+    data class Error(val message: String? = null, val exception: Throwable? = null) : ExportStatus()
+}
+
 class ExerciseSetViewModel(private val repository: DataRepository,
+                           private val driveRepository: DriveRepository,
                            private val jsonDataManager: JsonDataManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ExerciseSetFormState())
     val uiState: StateFlow<ExerciseSetFormState> = _uiState.asStateFlow()
+
+    // État d'exportation
+    private val _exportStatus = MutableStateFlow<ExportStatus>(ExportStatus.Idle)
+    val exportStatus: StateFlow<ExportStatus> = _exportStatus
 
     var bodyWeight by mutableStateOf("")
         private set
@@ -165,6 +181,32 @@ class ExerciseSetViewModel(private val repository: DataRepository,
             workoutType = selectedWorkoutType,
             bodyWeight = bodyWeight.toDoubleOrNull() // Double? accepté
         )
+    }
+
+    fun exportToDrive(jsonContent: String, fileName: String) {
+        viewModelScope.launch {
+            _exportStatus.value = ExportStatus.Idle
+
+            val result = driveRepository.uploadWorkoutToDrive(fileName, jsonContent)
+            result.onSuccess { fileId ->
+                _exportStatus.value = ExportStatus.Success(fileId)
+            }.onFailure { exception ->
+                _exportStatus.value = ExportStatus.Error(
+                    message = exception.message,
+                    exception = exception
+                )
+            }
+        }
+    }
+
+    private fun getCurrentDate(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        return sdf.format(Date())
+    }
+
+    // Réinitialiser l'état d'exportation
+    fun resetExportStatus() {
+        _exportStatus.value = ExportStatus.Idle
     }
 
     fun clearError() {

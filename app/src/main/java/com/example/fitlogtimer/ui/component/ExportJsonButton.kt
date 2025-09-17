@@ -1,67 +1,67 @@
 package com.example.fitlogtimer.ui.component
 
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.core.content.FileProvider
+import androidx.compose.ui.platform.LocalContext
 import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModel
-import java.io.File
+import com.example.fitlogtimer.ui.viewmodel.ExportStatus
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun ExportJsonButton(
     viewModel: ExerciseSetViewModel,
-    context: Context,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
+    // Observer l'état d'exportation pour afficher les toasts
+    LaunchedEffect(viewModel.exportStatus) {
+        when (val status = viewModel.exportStatus) {
+            is ExportStatus.Success -> {
+                Toast.makeText(context, "Exporté vers Drive avec succès", Toast.LENGTH_LONG).show()
+                Log.d("Export", "Fichier exporté avec ID: ${status.fileId}")
+            }
+            is ExportStatus.Error -> {
+                Toast.makeText(context, "Erreur d'exportation: ${status.message}", Toast.LENGTH_LONG).show()
+                Log.e("Export", "Erreur d'exportation", status.exception)
+            }
+            ExportStatus.Idle -> {} // Ne rien faire
+        }
+    }
+
     Button(
         onClick = {
-            val timestamp = System.currentTimeMillis()
-            val sdf = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
-            val formatted = sdf.format(Date(timestamp))
-            val fileName = "workout_export_$formatted.json"
+            coroutineScope.launch {
+                try {
+                    val timestamp = System.currentTimeMillis()
+                    val sdf = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
+                    val formatted = sdf.format(Date(timestamp))
+                    val fileName = "workout_export_$formatted.json"
 
-            val file = File(context.cacheDir, fileName)
-            val json = viewModel.exportWorkoutToJson()
-            file.writeText(json)
+                    // Générer le JSON
+                    val json = viewModel.exportWorkoutToJson()
 
-            val fileUri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.provider",
-                file
-            )
+                    // Exporter vers Drive via le ViewModel
+                    viewModel.exportToDrive(json, fileName)
 
-            // Intent spécifique pour Drive uniquement
-            val driveIntent = Intent(Intent.ACTION_SEND).apply {
-                `package` = "com.google.android.apps.docs"
-                type = "application/json"
-                putExtra(Intent.EXTRA_STREAM, fileUri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                putExtra(Intent.EXTRA_TITLE, fileName)
+                    Log.d("Export", "Début exportation: $fileName")
+
+                } catch (e: Exception) {
+                    Toast.makeText(context, "Erreur: ${e.message}", Toast.LENGTH_LONG).show()
+                    Log.e("Export", "Erreur lors de la préparation export", e)
+                }
             }
-
-            // Vérifier si l'intent peut être résolu
-            val resolveInfo = context.packageManager.resolveActivity(
-                driveIntent,
-                PackageManager.MATCH_DEFAULT_ONLY
-            )
-
-            if (resolveInfo != null) {
-                context.startActivity(driveIntent)
-            } else {
-                // si Drive n'est pas installé
-                Toast.makeText(context, "Google Drive n'est pas installé", Toast.LENGTH_LONG).show()
-            }
-
-            Toast.makeText(context, "Export JSON généré", Toast.LENGTH_SHORT).show()
-            Log.d("Export", "Fichier exporté : $fileName")
         },
         modifier = modifier
     ) {
