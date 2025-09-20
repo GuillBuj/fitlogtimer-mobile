@@ -3,29 +3,22 @@ package com.example.fitlogtimer.ui.viewmodel
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitlogtimer.data.local.JsonDataManager
 import com.example.fitlogtimer.data.model.Exercise
 import com.example.fitlogtimer.data.model.ExerciseSet
-import com.example.fitlogtimer.data.model.WorkoutExport
 import com.example.fitlogtimer.data.model.WorkoutType
 import com.example.fitlogtimer.data.repository.DataRepository
 import com.example.fitlogtimer.data.repository.DriveRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.util.Date
-import java.util.Locale
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import com.example.fitlogtimer.data.remote.drive.GoogleDriveManager
 
 data class ExerciseSetFormState(
     val selectedExerciseId: Int = -1,
@@ -42,39 +35,49 @@ data class ExerciseSetFormState(
                 weight.isNotBlank() && weight.toDoubleOrNull() != null
 }
 
-// État d'exportation
-sealed class ExportStatus {
-    object Idle : ExportStatus()
-    data class Success(val fileId: String) : ExportStatus()
-    data class Error(val message: String? = null, val exception: Throwable? = null) : ExportStatus()
-}
 
-class ExerciseSetViewModel(private val repository: DataRepository,
-                           private val driveRepository: DriveRepository,
-                           private val jsonDataManager: JsonDataManager
-) : ViewModel() {
+
+class ExerciseSetViewModel(
+    app: Application,
+    private val repository: DataRepository,
+    private val driveRepository: DriveRepository,
+    private val jsonDataManager: JsonDataManager
+) : AndroidViewModel(app) {
+
     private val _uiState = MutableStateFlow(ExerciseSetFormState())
     val uiState: StateFlow<ExerciseSetFormState> = _uiState.asStateFlow()
 
     // État d'exportation
+    sealed class ExportStatus {
+        object Idle : ExportStatus()
+        data class Success(val fileId: String) : ExportStatus()
+        data class Error(val message: String? = null, val exception: Throwable? = null) : ExportStatus()
+    }
     private val _exportStatus = MutableStateFlow<ExportStatus>(ExportStatus.Idle)
     val exportStatus: StateFlow<ExportStatus> = _exportStatus
 
-    var bodyWeight by mutableStateOf("")
+    private val driveManager = GoogleDriveManager(app.applicationContext)
+
+    private val context: Context = app.applicationContext
+
+    var bodyWeight by androidx.compose.runtime.mutableStateOf("")
         private set
 
-    var showBodyWeightDialog by mutableStateOf(false)
+    var showBodyWeightDialog by androidx.compose.runtime.mutableStateOf(false)
         private set
 
-    var selectedWorkoutType by mutableStateOf<String?>(null)
+    var selectedWorkoutType by androidx.compose.runtime.mutableStateOf<String?>(null)
         private set
 
-    var showWorkoutTypeSelector by mutableStateOf(false)
+    var showWorkoutTypeSelector by androidx.compose.runtime.mutableStateOf(false)
         private set
 
-    var workoutTypes by mutableStateOf<List<WorkoutType>>(emptyList())
+    var workoutTypes by androidx.compose.runtime.mutableStateOf<List<WorkoutType>>(emptyList())
         private set
 
+    companion object {
+        const val FITLOG_FOLDER_ID = "1Ukuk_217ZUkXb3A75G2Sedi4Q5t8tMKa"
+    }
 
     init {
         loadExercises()
@@ -84,9 +87,7 @@ class ExerciseSetViewModel(private val repository: DataRepository,
     private fun loadExercises() {
         viewModelScope.launch {
             try {
-                val exercises = withContext(Dispatchers.IO) {
-                    repository.getExercises()
-                }
+                val exercises = repository.getExercises()
                 _uiState.value = _uiState.value.copy(
                     exercises = exercises,
                     isLoading = false,
@@ -133,7 +134,6 @@ class ExerciseSetViewModel(private val repository: DataRepository,
 
             val updatedSets = currentState.exerciseSets + newSet
 
-            //recopie le dernier set pour mettre en valeur par defaut
             _uiState.value = currentState.copy(
                 exerciseSets = updatedSets,
                 selectedExerciseId = selectedExercise.id,
@@ -179,32 +179,46 @@ class ExerciseSetViewModel(private val repository: DataRepository,
             exerciseSets = _uiState.value.exerciseSets,
             date = LocalDate.now().toString(),
             workoutType = selectedWorkoutType,
-            bodyWeight = bodyWeight.toDoubleOrNull() // Double? accepté
+            bodyWeight = bodyWeight.toDoubleOrNull()
         )
     }
 
     fun exportToDrive(jsonContent: String, fileName: String) {
         viewModelScope.launch {
             _exportStatus.value = ExportStatus.Idle
+            Log.d("DriveDebug", "4. ViewModel - Début export: $fileName")
 
-            val result = driveRepository.uploadWorkoutToDrive(fileName, jsonContent)
-            result.onSuccess { fileId ->
-                _exportStatus.value = ExportStatus.Success(fileId)
-            }.onFailure { exception ->
+            try {
+                Log.d("DriveDebug", "4.1 ViewModel - Appel repository...")
+                val result = driveRepository.uploadWorkoutToDrive(fileName, jsonContent)
+
+                if (result.isSuccess) {
+                    val fileId = result.getOrNull() ?: ""
+                    Log.d("DriveDebug", "✅ 4.2 ViewModel - Succès final, fileId: $fileId")
+                    _exportStatus.value = ExportStatus.Success(fileId)
+                } else {
+                    val exception = result.exceptionOrNull() ?: Exception("Erreur inconnue")
+                    Log.e("DriveDebug", "❌ 4.2 ViewModel - Échec final: ${exception.message}")
+
+                    _exportStatus.value = ExportStatus.Error(
+                        message = exception.message,
+                        exception = exception
+                    )
+
+                }
+
+            } catch (e: Exception) {
+                Log.e("DriveDebug", "❌ 4.3 ViewModel - Exception non gérée: ${e.message}")
+
                 _exportStatus.value = ExportStatus.Error(
-                    message = exception.message,
-                    exception = exception
+                    message = e.message,
+                    exception = e
                 )
+
             }
         }
     }
 
-    private fun getCurrentDate(): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        return sdf.format(Date())
-    }
-
-    // Réinitialiser l'état d'exportation
     fun resetExportStatus() {
         _exportStatus.value = ExportStatus.Idle
     }
@@ -213,3 +227,4 @@ class ExerciseSetViewModel(private val repository: DataRepository,
         _uiState.value = _uiState.value.copy(error = null)
     }
 }
+

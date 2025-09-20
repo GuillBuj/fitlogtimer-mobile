@@ -1,7 +1,7 @@
 package com.example.fitlogtimer.data.remote.drive
 
 import android.content.Context
-import com.example.fitlogtimer.data.model.DriveFileInfo
+import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.ByteArrayContent
@@ -33,58 +33,53 @@ class GoogleDriveService(private val context: Context) {
         ).setApplicationName("FitLogTimer").build()
     }
 
+    companion object {
+        const val FITLOG_FOLDER_ID = "1Ukuk_217ZUkXb3A75G2Sedi4Q5t8tMKa"
+    }
+
     suspend fun uploadFile(
         fileName: String,
-        content: String,
-        folderId: String? = null
+        content: String
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
+            Log.d("DriveDebug", "1. Service - Début upload: $fileName")
+
+            val account = GoogleSignIn.getLastSignedInAccount(context)
+            if (account == null) {
+                Log.e("DriveDebug", "❌ 1.1 Service - Aucun compte Google connecté")
+                return@withContext Result.failure(Exception("Non authentifié avec Google"))
+            }
+
+            Log.d("DriveDebug", "✅ 1.2 Service - Compte connecté: ${account.email}")
+
             val fileMetadata = File().apply {
-                name = fileName  // CORRIGÉ
-                mimeType = "application/json"  // CORRIGÉ
-                if (!folderId.isNullOrEmpty()) {
-                    parents = listOf(folderId)  // CORRIGÉ
-                }
+                name = fileName
+                mimeType = "application/json"
+                parents = listOf(FITLOG_FOLDER_ID)
             }
 
             val mediaContent = ByteArrayContent("application/json", content.toByteArray())
 
+            Log.d("DriveDebug", "1.3 Service - Appel API Drive...")
             val file = drive.files().create(fileMetadata, mediaContent)
-                .setFields("id, name, createdTime, webViewLink")
+                .setFields("id, name, webViewLink")
                 .execute()
+
+            Log.d("DriveDebug", "✅ 1.4 Service - Fichier créé ID: ${file.id}")
 
             // Rendre le fichier public
             val permission = Permission().apply {
-                type = "anyone"  // CORRIGÉ
-                role = "reader"  // CORRIGÉ
+                type = "anyone"
+                role = "reader"
             }
 
             drive.permissions().create(file.id, permission).execute()
+            Log.d("DriveDebug", "✅ 1.5 Service - Permissions publiques appliquées")
 
             Result.success(file.id ?: "")
+
         } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun listFilesInFolder(folderId: String): Result<List<DriveFileInfo>> = withContext(Dispatchers.IO) {
-        try {
-            val result = drive.files().list()
-                .setQ("'$folderId' in parents and mimeType='application/json'")
-                .setFields("files(id, name, createdTime, webViewLink)")
-                .execute()
-
-            val driveFiles = result.files.map { file ->
-                DriveFileInfo(
-                    id = file.id,
-                    name = file.name,
-                    createdTime = file.createdTime.toString(),
-                    webViewLink = file.webViewLink
-                )
-            }
-
-            Result.success(driveFiles)
-        } catch (e: Exception) {
+            Log.e("DriveDebug", "❌ 1.6 Service - Erreur: ${e.javaClass.simpleName} - ${e.message}")
             Result.failure(e)
         }
     }

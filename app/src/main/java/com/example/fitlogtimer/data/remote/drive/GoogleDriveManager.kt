@@ -1,20 +1,32 @@
 package com.example.fitlogtimer.data.remote.drive
 
 import android.content.Context
-import com.example.fitlogtimer.data.model.DriveFileInfo
-import kotlinx.coroutines.CoroutineScope
+import android.util.Log
+import com.example.fitlogtimer.data.remote.drive.GoogleDriveService
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GoogleDriveManager(private val context: Context) {
 
     private val driveService = GoogleDriveService(context)
 
-    companion object {
-        const val FITLOG_FOLDER_ID = "13zGQYLhRMQAv1eCd_zxY98jsM7NmFviX"
-    }
+    suspend fun uploadWorkoutFile(
+        fileName: String,
+        jsonContent: String
+    ): Result<String> = withContext(Dispatchers.IO) {
+        Log.d("DriveDebug", "2. Manager - Début traitement: $fileName")
 
-    suspend fun uploadWorkoutFile(fileName: String, jsonContent: String): Result<String> {
-        return driveService.uploadFile(fileName, jsonContent, FITLOG_FOLDER_ID)
+        val result = driveService.uploadFile(fileName, jsonContent)
+
+        when {
+            result.isSuccess -> {
+                Log.d("DriveDebug", "✅ 2.1 Manager - Succès: ${result.getOrNull()}")
+            }
+            else -> {
+                Log.e("DriveDebug", "❌ 2.1 Manager - Échec: ${result.exceptionOrNull()?.message}")
+            }
+        }
+
+        result
     }
 }

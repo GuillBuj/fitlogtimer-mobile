@@ -14,11 +14,13 @@ lifecycleViewModelKtx = "2.6.1"
 coroutines = "1.7.3"
 foundationLayout = "1.9.0"
 composeMaterialIcons = "1.6.0"
+playServicesAuth = "21.2.0"
 serialization = "1.7.1"
 runtime = "1.9.0"
 googleAuth = "21.0.0"
 googleDriveApi = "v3-rev20220815-2.0.0"
 googleApiClient = "2.2.0"
+firebaseAppdistributionGradle = "5.1.1"
 
 [libraries]
 # Core
@@ -55,6 +57,8 @@ androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime
 google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "googleAuth" }
 google-drive-api = { module = "com.google.apis:google-api-services-drive", version.ref = "googleDriveApi" }
 google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClient" }
+firebase-appdistribution-gradle = { group = "com.google.firebase", name = "firebase-appdistribution-gradle", version.ref = "firebaseAppdistributionGradle" }
+play-services-auth-v2120 = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,6 +1,7 @@
 package com.example.fitlogtimer.ui.screen
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,13 +52,17 @@ import com.example.fitlogtimer.ui.viewmodel.ExerciseSetViewModelFactory
 @Composable
 fun ExerciseSetFormScreen() {
     val context = LocalContext.current
+    val application = context.applicationContext as Application
+
     val jsonDataManager = remember { JsonDataManager(context) }
     val repository = remember { DataRepository(jsonDataManager) }
+    val driveRepository = remember { DriveRepository(context) }
 
     val viewModel: ExerciseSetViewModel = viewModel(
         factory = ExerciseSetViewModelFactory(
+            application = application, // AJOUTÉ - premier paramètre
             repository = repository,
-            driveRepository = DriveRepository(LocalContext.current), // ou requireContext() si dans Fragment
+            driveRepository = driveRepository,
             jsonDataManager = jsonDataManager
         )
     )
@@ -210,7 +215,6 @@ fun ExerciseSetFormScreen() {
 
                             ExportJsonButton(
                                 viewModel = viewModel,
-                                context = context,
                                 modifier = Modifier.weight(1f)
                             )
                         }

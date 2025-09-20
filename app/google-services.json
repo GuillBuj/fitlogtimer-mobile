@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "427981457396",
+    "project_id": "fitlogtimer-6c18b",
+    "storage_bucket": "fitlogtimer-6c18b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:427981457396:android:f1481b1685602c85b29ba1",
+        "android_client_info": {
+          "package_name": "com.example.fitlogtimer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "427981457396-td9aegft1c2lb3tp756kr1391rlev2u0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fitlogtimer",
+            "certificate_hash": "1b8e5a4525ea2fa6a2d239cd75c82d8931e366ae"
+          }
+        },
+        {
+          "client_id": "427981457396-50e682v3a5knnc849u1eu0t6857d9cai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPFHwlmEPsqcuJzgvZ9F0UQFFiUYfDlus"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "427981457396-50e682v3a5knnc849u1eu0t6857d9cai.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
