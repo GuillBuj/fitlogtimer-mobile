@@ -2,17 +2,21 @@ package com.example.fitlogtimer.data.remote.drive
 
 import android.content.Context
 import android.util.Log
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.ByteArrayContent
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
-import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import com.google.api.services.drive.model.Permission
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 import java.util.Collections
 
 class GoogleDriveService(private val context: Context) {
@@ -63,6 +67,7 @@ class GoogleDriveService(private val context: Context) {
             Log.d("DriveDebug", "1.3 Service - Appel API Drive...")
             val file = drive.files().create(fileMetadata, mediaContent)
                 .setFields("id, name, webViewLink")
+                .setIgnoreDefaultVisibility(true) // ← SEULE MODIFICATION AJOUTÉE
                 .execute()
 
             Log.d("DriveDebug", "✅ 1.4 Service - Fichier créé ID: ${file.id}")
@@ -78,6 +83,12 @@ class GoogleDriveService(private val context: Context) {
 
             Result.success(file.id ?: "")
 
+        } catch (e: UserRecoverableAuthIOException) {
+            Log.e("DriveDebug", "🔐 1.6 Service - Authentification requise: ${e.message}")
+            Result.failure(e)
+        } catch (e: GoogleJsonResponseException) {
+            Log.e("DriveDebug", "🚨 1.6 Service - Erreur API Google: ${e.details?.code} - ${e.details?.message}")
+            Result.failure(e)
         } catch (e: Exception) {
             Log.e("DriveDebug", "❌ 1.6 Service - Erreur: ${e.javaClass.simpleName} - ${e.message}")
             Result.failure(e)
