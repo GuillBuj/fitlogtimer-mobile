@@ -6,7 +6,8 @@ data class Exercise (
     val shortName: String,
     val position: Int,
     val defaultWeight: Double,
-    val defaultReps: Int
+    val defaultReps: Int,
+    val type: String
 )
 
 data class ExerciseList(

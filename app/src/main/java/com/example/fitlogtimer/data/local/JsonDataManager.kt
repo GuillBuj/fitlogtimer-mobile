@@ -32,9 +32,9 @@ class JsonDataManager(private val context: Context) {
 
     fun exportToJson(exerciseSets: List<ExerciseSet>, date: String, bodyWeight: Double? = null, workoutType: String? = null): String {
         val workoutExport = WorkoutExport(
-            exerciseSets = exerciseSets,
+            sets = exerciseSets,
             bodyWeight = bodyWeight,
-            workoutType = workoutType,
+            workoutType = workoutType?: "-",
             date = date
         )
         return Gson().toJson(workoutExport)

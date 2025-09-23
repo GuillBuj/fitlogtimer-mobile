@@ -1,26 +1,29 @@
 {
   "exercises": [
     {
-      "id": 2,
+      "id": 1,
       "name": "Bench Press",
       "shortName": "DC",
       "position": 1,
       "defaultWeight": 50,
-      "defaultReps": 10
+      "defaultReps": 10,
+      "type": "FREE_WEIGHT"
     },
     {
-      "id": 10,
+      "id": 4,
       "name": "Deadlift",
       "shortName": "DL",
       "position": 2,
       "defaultWeight": 80,
-      "defaultReps": 2
+      "defaultReps": 2,
+      "type": "FREE_WEIGHT"
     },
     {
-      "id": 15,
+      "id": 262,
       "name": "Squat",
       "shortName": "SQ",
-      "position": 3
+      "position": 3,
+      "type": "FREE_WEIGHT"
     }
   ],
   "workoutTypes": [

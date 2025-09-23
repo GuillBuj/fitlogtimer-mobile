@@ -195,7 +195,7 @@ fun ExerciseSetFormScreen() {
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Bold
                                     )
-                                    Text("${exerciseSet.reps} reps × ${exerciseSet.weight} kg")
+                                    Text("${exerciseSet.repNumber} reps × ${exerciseSet.weight} kg")
                                 }
                             }
                             Spacer(modifier = Modifier.height(8.dp))

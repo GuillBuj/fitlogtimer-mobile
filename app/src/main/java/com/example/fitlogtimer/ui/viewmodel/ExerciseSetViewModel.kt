@@ -128,8 +128,9 @@ class ExerciseSetViewModel(
         if (selectedExercise != null) {
             val newSet = ExerciseSet(
                 exerciseId = selectedExercise.id,
-                reps = currentState.reps.toIntOrNull() ?: selectedExercise.defaultReps,
-                weight = currentState.weight.toDoubleOrNull() ?: selectedExercise.defaultWeight
+                repNumber = currentState.reps.toIntOrNull() ?: selectedExercise.defaultReps,
+                weight = currentState.weight.toDoubleOrNull() ?: selectedExercise.defaultWeight,
+                type = selectedExercise.type
             )
 
             val updatedSets = currentState.exerciseSets + newSet
@@ -137,7 +138,7 @@ class ExerciseSetViewModel(
             _uiState.value = currentState.copy(
                 exerciseSets = updatedSets,
                 selectedExerciseId = selectedExercise.id,
-                reps = newSet.reps.toString(),
+                reps = newSet.repNumber.toString(),
                 weight = newSet.weight.toString()
             )
         }
