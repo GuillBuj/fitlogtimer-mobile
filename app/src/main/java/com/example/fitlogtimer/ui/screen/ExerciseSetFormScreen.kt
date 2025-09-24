@@ -44,6 +44,7 @@ import com.example.fitlogtimer.ui.component.Chrono
 import com.example.fitlogtimer.ui.component.DistanceInput
 import com.example.fitlogtimer.ui.component.DurationInput
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
+import com.example.fitlogtimer.ui.component.ExerciseSetItem
 import com.example.fitlogtimer.ui.component.ExportJsonButton
 import com.example.fitlogtimer.ui.component.RepsInput
 import com.example.fitlogtimer.ui.component.Timer
@@ -257,20 +258,17 @@ fun ExerciseSetFormScreen() {
                             thickness = DividerDefaults.Thickness,
                             color = DividerDefaults.color
                         )
+
                         uiState.exerciseSets.forEachIndexed { index, exerciseSet ->
                             val exercise = uiState.exercises.find { it.id == exerciseSet.exerciseId }
-                            Card(modifier = Modifier.fillMaxWidth()) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(
-                                        "#${index + 1} - ${exercise?.name ?: "Exercice ${exerciseSet.exerciseId}"}",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text("${exerciseSet.repNumber} reps × ${exerciseSet.weight} kg")
-                                }
-                            }
+                            ExerciseSetItem(
+                                exerciseSet = exerciseSet,
+                                exercise = exercise,
+                                index = index
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
+
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Row(

@@ -197,7 +197,7 @@ class ExerciseSetViewModel(
                 bands = "",
                 durationS = currentState.durationS.toIntOrNull() ?: 0,
                 distance = "",
-                type = selectedExercise.type
+                type = "ISOMETRIC"
             )
 
             "BODYWEIGHT" -> ExerciseSet(
@@ -207,7 +207,7 @@ class ExerciseSetViewModel(
                 bands = currentState.bands,
                 durationS = 0,
                 distance = "",
-                type = "ISOMETRIC"
+                type = "BODYWEIGHT"
             )
 
             "MOVEMENT" -> ExerciseSet(
