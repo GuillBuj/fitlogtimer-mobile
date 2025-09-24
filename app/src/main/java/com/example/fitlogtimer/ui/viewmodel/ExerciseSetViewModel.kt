@@ -80,8 +80,15 @@ class ExerciseSetViewModel(
     }
 
     init {
-        loadExercises()
-        loadWorkoutTypes()
+        viewModelScope.launch {
+            val refreshResult = repository.refreshExercisesFromDrive()
+            if (refreshResult.isFailure) {
+                Log.e("DriveDebug", "⚠️ Impossible de rafraîchir exercises.json: ${refreshResult.exceptionOrNull()?.message}")
+            }
+
+            loadExercises()
+            loadWorkoutTypes()
+        }
     }
 
     private fun loadExercises() {

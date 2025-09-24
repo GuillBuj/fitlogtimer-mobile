@@ -16,6 +16,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import java.util.Collections
 
@@ -94,4 +95,36 @@ class GoogleDriveService(private val context: Context) {
             Result.failure(e)
         }
     }
+
+    suspend fun downloadFile(fileName: String, folderId: String): Result<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                Log.d("DriveDebug", "🔽 Download - Recherche fichier: $fileName dans folderId=$folderId")
+
+                // Rechercher le fichier par nom dans le dossier
+                val fileQuery = "'$folderId' in parents and name = '$fileName'"
+                val fileList = drive.files().list()
+                    .setQ(fileQuery)
+                    .setSpaces("drive")
+                    .setFields("files(id, name)")
+                    .execute()
+
+                val fileId = fileList.files.firstOrNull()?.id
+                    ?: return@withContext Result.failure(Exception("Fichier $fileName introuvable dans le dossier"))
+
+                // Télécharger le contenu
+                val outputStream = ByteArrayOutputStream()
+                drive.files().get(fileId).executeMediaAndDownloadTo(outputStream)
+
+                val content = outputStream.toString("UTF-8")
+
+                Log.d("DriveDebug", "✅ Download - Fichier $fileName téléchargé (${content.length} caractères)")
+                Result.success(content)
+            } catch (e: Exception) {
+                Log.e("DriveDebug", "❌ Download - Erreur: ${e.message}", e)
+                Result.failure(e)
+            }
+        }
+
+
 }

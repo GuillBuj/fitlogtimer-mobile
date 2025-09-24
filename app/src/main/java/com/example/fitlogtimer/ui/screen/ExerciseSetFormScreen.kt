@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitlogtimer.data.local.JsonDataManager
+import com.example.fitlogtimer.data.remote.drive.GoogleDriveManager
 import com.example.fitlogtimer.data.repository.DataRepository
 import com.example.fitlogtimer.data.repository.DriveRepository
 import com.example.fitlogtimer.ui.component.AppTopBar
@@ -55,7 +56,9 @@ fun ExerciseSetFormScreen() {
     val application = context.applicationContext as Application
 
     val jsonDataManager = remember { JsonDataManager(context) }
-    val repository = remember { DataRepository(jsonDataManager) }
+    val driveManager = remember { GoogleDriveManager(context) }
+
+    val repository = remember { DataRepository(jsonDataManager, driveManager) }
     val driveRepository = remember { DriveRepository(context) }
 
     val viewModel: ExerciseSetViewModel = viewModel(

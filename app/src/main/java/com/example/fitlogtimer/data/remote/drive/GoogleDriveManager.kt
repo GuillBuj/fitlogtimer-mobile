@@ -10,6 +10,12 @@ class GoogleDriveManager(private val context: Context) {
 
     private val driveService = GoogleDriveService(context)
 
+    suspend fun downloadExercisesFile(): Result<String> =
+        driveService.downloadFile(
+            fileName = "exercises.json",
+            folderId = "19LPdQQy0BvxxiDOYfBAuxX9d-ySITefw"
+        )
+
     suspend fun uploadWorkoutFile(
         fileName: String,
         jsonContent: String
