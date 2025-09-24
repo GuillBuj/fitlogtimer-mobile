@@ -139,7 +139,6 @@ fun ExerciseSetFormScreen() {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // 👉 Ici : affichage conditionnel selon le type
                     when (selectedExercise?.type) {
                         "FREE_WEIGHT" -> {
                             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -271,6 +270,23 @@ fun ExerciseSetFormScreen() {
                                 }
                             }
                             Spacer(modifier = Modifier.height(8.dp))
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Button(
+                                onClick = viewModel::clearWorkout,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Effacer tout")
+                            }
+
+                            ExportJsonButton(
+                                viewModel = viewModel,
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                     } else {
                         Text(
