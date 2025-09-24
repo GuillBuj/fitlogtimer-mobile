@@ -7,6 +7,9 @@ data class Exercise (
     val position: Int,
     val defaultWeight: Double,
     val defaultReps: Int,
+    val defaultBands : String,
+    val defaultDurationS : Int,
+    val defaultDistance : String,
     val type: String
 )
 

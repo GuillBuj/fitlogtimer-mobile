@@ -38,8 +38,11 @@ import com.example.fitlogtimer.data.remote.drive.GoogleDriveManager
 import com.example.fitlogtimer.data.repository.DataRepository
 import com.example.fitlogtimer.data.repository.DriveRepository
 import com.example.fitlogtimer.ui.component.AppTopBar
+import com.example.fitlogtimer.ui.component.BandsInput
 import com.example.fitlogtimer.ui.component.BodyWeightInputIcon
 import com.example.fitlogtimer.ui.component.Chrono
+import com.example.fitlogtimer.ui.component.DistanceInput
+import com.example.fitlogtimer.ui.component.DurationInput
 import com.example.fitlogtimer.ui.component.ExerciseDropdown
 import com.example.fitlogtimer.ui.component.ExportJsonButton
 import com.example.fitlogtimer.ui.component.RepsInput
@@ -63,7 +66,7 @@ fun ExerciseSetFormScreen() {
 
     val viewModel: ExerciseSetViewModel = viewModel(
         factory = ExerciseSetViewModelFactory(
-            application = application, // AJOUTÉ - premier paramètre
+            application = application,
             repository = repository,
             driveRepository = driveRepository,
             jsonDataManager = jsonDataManager
@@ -71,17 +74,10 @@ fun ExerciseSetFormScreen() {
     )
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(uiState.selectedExerciseId) {
-        Log.d("ExerciseSetFormScreen", "UI state changed: selectedExerciseId = ${uiState.selectedExerciseId}")
-    }
+    val selectedExercise = uiState.exercises.find { it.id == uiState.selectedExerciseId }
 
     Scaffold(
-        topBar = {
-            AppTopBar(
-                modifier = Modifier.statusBarsPadding()
-            )
-        }
+        topBar = { AppTopBar(modifier = Modifier.statusBarsPadding()) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -100,11 +96,7 @@ fun ExerciseSetFormScreen() {
                     style = MaterialTheme.typography.headlineMedium
                 )
 
-                WorkoutTypeInputIcon(
-                    viewModel = viewModel
-                )
-
-
+                WorkoutTypeInputIcon(viewModel = viewModel)
                 BodyWeightInputIcon(viewModel = viewModel)
             }
 
@@ -138,6 +130,7 @@ fun ExerciseSetFormScreen() {
                 }
 
                 else -> {
+                    // Sélecteur d’exercice
                     ExerciseDropdown(
                         exercises = uiState.exercises,
                         selectedExerciseId = uiState.selectedExerciseId,
@@ -146,20 +139,97 @@ fun ExerciseSetFormScreen() {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        RepsInput(
-                            reps = uiState.reps,
-                            onRepsChange = viewModel::updateReps,
-                            modifier = Modifier.weight(1f)
-                        )
+                    // 👉 Ici : affichage conditionnel selon le type
+                    when (selectedExercise?.type) {
+                        "FREE_WEIGHT" -> {
+                            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                RepsInput(
+                                    reps = uiState.reps,
+                                    onRepsChange = viewModel::updateReps,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                WeightInput(
+                                    weight = uiState.weight,
+                                    onWeightChange = viewModel::updateWeight,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
 
-                        WeightInput(
-                            weight = uiState.weight,
-                            onWeightChange = viewModel::updateWeight,
-                            modifier = Modifier.weight(1f)
-                        )
+                        "ELASTIC" -> {
+                            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                RepsInput(
+                                    reps = uiState.reps,
+                                    onRepsChange = viewModel::updateReps,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                BandsInput(
+                                    bands = uiState.bands,
+                                    onBandsChange = viewModel::updateBands,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+
+                        "ISOMETRIC" -> {
+                            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                DurationInput(
+                                    duration = uiState.durationS,
+                                    onDurationChange = viewModel::updateDuration,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                WeightInput(
+                                    weight = uiState.weight,
+                                    onWeightChange = viewModel::updateWeight,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+
+                        "BODYWEIGHT" -> {
+                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                RepsInput(
+                                    reps = uiState.reps,
+                                    onRepsChange = viewModel::updateReps,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                BandsInput(
+                                    bands = uiState.bands,
+                                    onBandsChange = viewModel::updateBands,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                WeightInput(
+                                    weight = uiState.weight,
+                                    onWeightChange = viewModel::updateWeight,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+
+                        "MOVEMENT" -> {
+                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                RepsInput(
+                                    reps = uiState.reps,
+                                    onRepsChange = viewModel::updateReps,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                DistanceInput(
+                                    distance = uiState.distance,
+                                    onDistanceChange = viewModel::updateDistance,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                BandsInput(
+                                    bands = uiState.bands,
+                                    onBandsChange = viewModel::updateBands,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                WeightInput(
+                                    weight = uiState.weight,
+                                    onWeightChange = viewModel::updateWeight,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -177,18 +247,17 @@ fun ExerciseSetFormScreen() {
                     Chrono()
                     Timer()
 
+                    // Liste des séries déjà ajoutées (inchangé)
                     if (uiState.exerciseSets.isNotEmpty()) {
                         Text(
                             "Exercices ajoutés (${uiState.exerciseSets.size})",
                             style = MaterialTheme.typography.headlineSmall
                         )
-
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 8.dp),
                             thickness = DividerDefaults.Thickness,
                             color = DividerDefaults.color
                         )
-
                         uiState.exerciseSets.forEachIndexed { index, exerciseSet ->
                             val exercise = uiState.exercises.find { it.id == exerciseSet.exerciseId }
                             Card(modifier = Modifier.fillMaxWidth()) {
@@ -202,24 +271,6 @@ fun ExerciseSetFormScreen() {
                                 }
                             }
                             Spacer(modifier = Modifier.height(8.dp))
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Button(
-                                onClick = viewModel::clearWorkout,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("Effacer tout")
-                            }
-
-                            ExportJsonButton(
-                                viewModel = viewModel,
-                                modifier = Modifier.weight(1f)
-                            )
                         }
                     } else {
                         Text(

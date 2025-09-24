@@ -24,16 +24,37 @@ data class ExerciseSetFormState(
     val selectedExerciseId: Int = -1,
     val reps: String = "",
     val weight: String = "",
+    val bands: String = "",
+    val durationS: String = "",
+    val distance: String = "",
     val exercises: List<Exercise> = emptyList(),
     val exerciseSets: List<ExerciseSet> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null
 ) {
     val isFormValid: Boolean
-        get() = selectedExerciseId != -1 &&
-                reps.isNotBlank() && reps.toIntOrNull() != null &&
-                weight.isNotBlank() && weight.toDoubleOrNull() != null
+        get() {
+            if (selectedExerciseId == -1) return false
+            return when (exercises.find { it.id == selectedExerciseId }?.type) {
+                "FREE_WEIGHT" -> reps.isNotBlank() && reps.toIntOrNull() != null &&
+                        weight.isNotBlank() && weight.toDoubleOrNull() != null
+
+                "ELASTIC" -> reps.isNotBlank() && reps.toIntOrNull() != null &&
+                        bands.isNotBlank()
+
+                "ISOMETRIC" -> durationS.isNotBlank() && durationS.toIntOrNull() != null &&
+                        weight.toDoubleOrNull() != null
+
+                "BODYWEIGHT" -> reps.isNotBlank() && reps.toIntOrNull() != null
+
+                "MOVEMENT" -> reps.isNotBlank() && reps.toIntOrNull() != null &&
+                        distance.isNotBlank()
+
+                else -> false
+            }
+        }
 }
+
 
 
 
@@ -115,8 +136,11 @@ class ExerciseSetViewModel(
 
         _uiState.value = currentState.copy(
             selectedExerciseId = exerciseId,
-            reps = exercise?.defaultReps?.toString() ?: currentState.reps,
-            weight = exercise?.defaultWeight?.toString() ?: currentState.weight
+            reps = exercise?.defaultReps?.toString().orEmpty(),
+            weight = exercise?.defaultWeight?.toString().orEmpty(),
+            bands = exercise?.defaultBands.orEmpty(),
+            durationS = exercise?.defaultDurationS?.toString().orEmpty(),
+            distance = exercise?.defaultDistance.orEmpty()
         )
     }
 
@@ -128,28 +152,82 @@ class ExerciseSetViewModel(
         _uiState.value = _uiState.value.copy(weight = newWeight)
     }
 
+    fun updateBands(bands: String) {
+        _uiState.value = _uiState.value.copy(bands = bands)
+    }
+
+    fun updateDuration(duration: String) {
+        _uiState.value = _uiState.value.copy(durationS = duration)
+    }
+
+    fun updateDistance(distance: String) {
+        _uiState.value = _uiState.value.copy(distance = distance)
+    }
+
+
     fun addExerciseSet() {
         val currentState = _uiState.value
-        val selectedExercise = currentState.exercises.find { it.id == currentState.selectedExerciseId }
+        val selectedExercise = currentState.exercises.find { it.id == currentState.selectedExerciseId } ?: return
 
-        if (selectedExercise != null) {
-            val newSet = ExerciseSet(
+        val newSet = when (selectedExercise.type) {
+            "FREE_WEIGHT" -> ExerciseSet(
                 exerciseId = selectedExercise.id,
-                repNumber = currentState.reps.toIntOrNull() ?: selectedExercise.defaultReps,
-                weight = currentState.weight.toDoubleOrNull() ?: selectedExercise.defaultWeight,
+                repNumber = currentState.reps.toIntOrNull() ?: 0,
+                weight = currentState.weight.toDoubleOrNull() ?: 0.0,
+                bands = "",
+                durationS = 0,
+                distance = "",
+                type = "FREE_WEIGHT"
+            )
+
+            "ELASTIC" -> ExerciseSet(
+                exerciseId = selectedExercise.id,
+                repNumber = currentState.reps.toIntOrNull() ?: 0,
+                weight = 0.0,
+                bands = currentState.bands,
+                durationS = 0,
+                distance = "",
+                type = "ELASTIC"
+            )
+
+            "ISOMETRIC" -> ExerciseSet(
+                exerciseId = selectedExercise.id,
+                repNumber = 0,
+                weight = currentState.weight.toDoubleOrNull() ?: 0.0,
+                bands = "",
+                durationS = currentState.durationS.toIntOrNull() ?: 0,
+                distance = "",
                 type = selectedExercise.type
             )
 
-            val updatedSets = currentState.exerciseSets + newSet
-
-            _uiState.value = currentState.copy(
-                exerciseSets = updatedSets,
-                selectedExerciseId = selectedExercise.id,
-                reps = newSet.repNumber.toString(),
-                weight = newSet.weight.toString()
+            "BODYWEIGHT" -> ExerciseSet(
+                exerciseId = selectedExercise.id,
+                repNumber = currentState.reps.toIntOrNull() ?: 0,
+                weight = currentState.weight.toDoubleOrNull() ?: 0.0,
+                bands = currentState.bands,
+                durationS = 0,
+                distance = "",
+                type = "ISOMETRIC"
             )
+
+            "MOVEMENT" -> ExerciseSet(
+                exerciseId = selectedExercise.id,
+                repNumber = currentState.reps.toIntOrNull() ?: 0,
+                weight = currentState.weight.toDoubleOrNull() ?: 0.0,
+                bands = currentState.bands,
+                durationS = 0,
+                distance = currentState.distance,
+                type = "MOVEMENT"
+            )
+
+            else -> return
         }
+
+        _uiState.value = currentState.copy(
+            exerciseSets = currentState.exerciseSets + newSet
+        )
     }
+
 
     private fun loadWorkoutTypes() {
         viewModelScope.launch {

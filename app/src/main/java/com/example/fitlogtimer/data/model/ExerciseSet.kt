@@ -9,6 +9,9 @@ data class ExerciseSet(
     val exerciseId: Int,
     val repNumber: Int,
     val weight: Double,
+    val bands : String,
+    val durationS : Int,
+    val distance : String,
     val type: String
 )
 
