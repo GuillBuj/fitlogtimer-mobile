@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -172,17 +174,27 @@ fun ExerciseSetFormScreen() {
                         }
 
                         "ISOMETRIC" -> {
-                            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Column( verticalArrangement = Arrangement.spacedBy(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally) {
                                 DurationInput(
                                     duration = uiState.durationS,
                                     onDurationChange = viewModel::updateDuration,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.widthIn(max = 180.dp)
                                 )
-                                WeightInput(
-                                    weight = uiState.weight,
-                                    onWeightChange = viewModel::updateWeight,
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                                    RepsInput(
+                                        reps = uiState.reps,
+                                        onRepsChange = viewModel::updateReps,
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    WeightInput(
+                                        weight = uiState.weight,
+                                        onWeightChange = viewModel::updateWeight,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
                             }
                         }
 

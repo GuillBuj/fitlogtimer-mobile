@@ -1,5 +1,6 @@
 package com.example.fitlogtimer.ui.component
 
+import android.R.color.white
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -53,7 +54,7 @@ fun Timer() {
 
     // Couleur dynamique
     val textColor = if (timeLeft < 0) darkRed else MaterialTheme.colorScheme.onBackground
-    val iconColor = if (timeLeft < 0) lightRed else if (isRunning) lightGreen else lightGray
+    val iconColor = if (timeLeft < 0) lightRed else if (isRunning) darkGreen else darkGray
 
     Column(
         modifier = Modifier
@@ -72,8 +73,8 @@ fun Timer() {
                 },
                 modifier = Modifier.size(48.dp),
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = darkGray,
-                    contentColor = lightGray
+                    containerColor = lightGray,
+                    contentColor = darkGray
                 )
             ) {
                 Icon(

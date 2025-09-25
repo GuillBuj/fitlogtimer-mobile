@@ -192,7 +192,7 @@ class ExerciseSetViewModel(
 
             "ISOMETRIC" -> ExerciseSet(
                 exerciseId = selectedExercise.id,
-                repNumber = 0,
+                repNumber = currentState.reps.toIntOrNull() ?: 0,
                 weight = currentState.weight.toDoubleOrNull() ?: 0.0,
                 bands = "",
                 durationS = currentState.durationS.toIntOrNull() ?: 0,
