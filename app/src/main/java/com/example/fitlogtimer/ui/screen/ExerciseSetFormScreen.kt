@@ -188,19 +188,22 @@ fun ExerciseSetFormScreen() {
 
                         "BODYWEIGHT" -> {
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                RepsInput(
-                                    reps = uiState.reps,
-                                    onRepsChange = viewModel::updateReps,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                    RepsInput(
+                                        reps = uiState.reps,
+                                        onRepsChange = viewModel::updateReps,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    WeightInput(
+                                        weight = uiState.weight,
+                                        onWeightChange = viewModel::updateWeight,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+
                                 BandsInput(
                                     bands = uiState.bands,
                                     onBandsChange = viewModel::updateBands,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                WeightInput(
-                                    weight = uiState.weight,
-                                    onWeightChange = viewModel::updateWeight,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
@@ -208,26 +211,31 @@ fun ExerciseSetFormScreen() {
 
                         "MOVEMENT" -> {
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                RepsInput(
-                                    reps = uiState.reps,
-                                    onRepsChange = viewModel::updateReps,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                DistanceInput(
-                                    distance = uiState.distance,
-                                    onDistanceChange = viewModel::updateDistance,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                BandsInput(
-                                    bands = uiState.bands,
-                                    onBandsChange = viewModel::updateBands,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                WeightInput(
-                                    weight = uiState.weight,
-                                    onWeightChange = viewModel::updateWeight,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                    RepsInput(
+                                        reps = uiState.reps,
+                                        onRepsChange = viewModel::updateReps,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    WeightInput(
+                                        weight = uiState.weight,
+                                        onWeightChange = viewModel::updateWeight,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+
+                                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                    DistanceInput(
+                                        distance = uiState.distance,
+                                        onDistanceChange = viewModel::updateDistance,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    BandsInput(
+                                        bands = uiState.bands,
+                                        onBandsChange = viewModel::updateBands,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
                             }
                         }
                     }
